@@ -22,32 +22,51 @@ public class PreencheBanco {
 		EntityManager manager = managerCreator.getInstance();
 
 		manager.getTransaction().begin();
-		manager.createQuery("delete from Sessao").executeUpdate();
-		manager.createQuery("delete from Espetaculo").executeUpdate();
-		manager.createQuery("delete from Estabelecimento").executeUpdate();
-		Estabelecimento estabelecimento = new Estabelecimento();
-		estabelecimento.setNome("Casa de shows");
-		estabelecimento.setEndereco("Rua dos Silveiras, 12345");
+		executaUpdate(manager, "delete from Sessao");
+		executaUpdate(manager, "delete from Espetaculo");
+		executaUpdate(manager, "delete from Estabelecimento");
+		Estabelecimento estabelecimento = criaEstabelecimento();
 
-		Espetaculo espetaculo = new Espetaculo();
-		espetaculo.setEstabelecimento(estabelecimento);
-		espetaculo.setNome("Depeche Mode");
-		espetaculo.setTipo(TipoDeEspetaculo.SHOW);
+		Espetaculo espetaculo = criaEspetaculo(estabelecimento);
 
 		manager.persist(estabelecimento);
 		manager.persist(espetaculo);
 
 		for (int i = 0; i < 10; i++) {
-			Sessao sessao = new Sessao();
-			sessao.setEspetaculo(espetaculo);
-			sessao.setInicio(new DateTime().plusDays(7+i));
-			sessao.setDuracaoEmMinutos(60 * 3);
-			sessao.setTotalIngressos(10);
-			sessao.setIngressosReservados(10 - i);
-			manager.persist(sessao);
+			criaSessao(manager, espetaculo, i);
 		}
 
 		manager.getTransaction().commit();
 		manager.close();
+	}
+
+	private static void criaSessao(EntityManager manager,
+			Espetaculo espetaculo, int i) {
+		Sessao sessao = new Sessao();
+		sessao.setEspetaculo(espetaculo);
+		sessao.setInicio(new DateTime().plusDays(7+i));
+		sessao.setDuracaoEmMinutos(60 * 3);
+		sessao.setTotalIngressos(10);
+		sessao.setIngressosReservados(10 - i);
+		manager.persist(sessao);
+	}
+
+	private static Espetaculo criaEspetaculo(Estabelecimento estabelecimento) {
+		Espetaculo espetaculo = new Espetaculo();
+		espetaculo.setEstabelecimento(estabelecimento);
+		espetaculo.setNome("Depeche Mode");
+		espetaculo.setTipo(TipoDeEspetaculo.SHOW);
+		return espetaculo;
+	}
+
+	private static Estabelecimento criaEstabelecimento() {
+		Estabelecimento estabelecimento = new Estabelecimento();
+		estabelecimento.setNome("Casa de shows");
+		estabelecimento.setEndereco("Rua dos Silveiras, 12345");
+		return estabelecimento;
+	}
+
+	private static void executaUpdate(EntityManager manager, String sql) {
+		manager.createQuery(sql).executeUpdate();
 	}
 }
