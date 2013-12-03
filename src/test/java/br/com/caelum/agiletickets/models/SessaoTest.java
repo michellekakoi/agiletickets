@@ -38,4 +38,12 @@ public class SessaoTest {
 
 		Assert.assertEquals(true, sessao.podeReservar(5));
 	}
+	
+	@Test
+	public void naoPodeSerReservadaQuantidadeDeIngressosNula() throws Exception{
+		Sessao sessao = new Sessao();
+		sessao.setTotalIngressos(5);
+
+		Assert.assertEquals(true, sessao.podeReservar(null));
+	}
 }
