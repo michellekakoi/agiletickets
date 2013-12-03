@@ -37,12 +37,4 @@ public class SessaoTest {
 		sessao.setTotalIngressos(2);
 		Assert.assertTrue(sessao.podeReservar(sessao.getIngressosDisponiveis()));
 	}
-	
-	@Test
-	public void deveVenderTotalIngressosIgualAoTotalDisponivel() throws Exception {
-		Sessao sessao = new Sessao();
-		sessao.setTotalIngressos(2);
-
-		Assert.assertEquals(true, sessao.podeReservar(2));
-	}
 }

@@ -34,14 +34,17 @@ public class EstabelecimentosController {
 
 	@Post @Path("/estabelecimentos")
 	public void adiciona(final Estabelecimento estabelecimento) {
-		// validando!
-		validator.checking(new Validations() {{
-			that(!Strings.isNullOrEmpty(estabelecimento.getNome()), "estabelecimento.nome","nome.nulo");
-			that(!Strings.isNullOrEmpty(estabelecimento.getEndereco()), "estabelecimento.endereco","endereco.nulo");
-		}});
+		validacaoEstabelecimento(estabelecimento);
 		validator.onErrorRedirectTo(this).lista();
 
 		diretorio.adiciona(estabelecimento);
 		result.redirectTo(this).lista();
+	}
+
+	private void validacaoEstabelecimento(final Estabelecimento estabelecimento) {
+		validator.checking(new Validations() {{
+			that(!Strings.isNullOrEmpty(estabelecimento.getNome()), "estabelecimento.nome","nome.nulo");
+			that(!Strings.isNullOrEmpty(estabelecimento.getEndereco()), "estabelecimento.endereco","endereco.nulo");
+		}});
 	}
 }
