@@ -30,4 +30,12 @@ public class SessaoTest {
 		sessao.reserva(3);
 		Assert.assertEquals(2, sessao.getIngressosDisponiveis().intValue());
 	}
+	
+	@Test
+	public void reservarTodaQuantidadeDeIngressosDisponivel() throws Exception{
+		Sessao sessao = new Sessao();
+		sessao.setTotalIngressos(5);
+
+		Assert.assertEquals(true, sessao.podeReservar(5));
+	}
 }
