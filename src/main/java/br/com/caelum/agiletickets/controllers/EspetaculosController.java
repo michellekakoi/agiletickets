@@ -101,18 +101,13 @@ public class EspetaculosController {
 			return;
 		}
 		validaQtdeDeVagas(quantidade, sessao);
-		validaSessao(quantidade, sessao);
+		
 		sessao.reserva(quantidade);
 		result.include("message", "Sessao reservada com sucesso");
 		result.redirectTo(IndexController.class).index();
 	}
 
-	private void validaSessao(final Integer quantidade, Sessao sessao) {
-		verificaDisponibilidadeIngresso(quantidade, sessao);
-
-		// em caso de erro, redireciona para a lista de sessao
-		validator.onErrorRedirectTo(this).sessao(sessao.getId());
-	}
+	
 
 
 	private void validaQtdeDeVagas(final Integer quantidade, Sessao sessao) {
@@ -124,16 +119,13 @@ public class EspetaculosController {
 
 			adicionaMensagemDeValidacao("Nao existem ingressos dispon√≠veis", "");
 		}
-	}
-
-	private void verificaDisponibilidadeIngresso(final Integer quantidade,
-		Sessao sessao) {
-		// em caso de erro, redireciona para a lista de sessao
+		
 		validator.onErrorRedirectTo(this).sessao(sessao.getId());
 
 		validator.add(new ValidationMessage("Nao existem ingressos disponiveis", ""));
 	}
 
+	
 	@Get @Path("/espetaculo/{espetaculoId}/sessoes")
 	public void sessoes(Long espetaculoId) {
 		Espetaculo espetaculo = carregaEspetaculo(espetaculoId);
