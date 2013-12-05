@@ -2,6 +2,7 @@ package br.com.caelum.agiletickets.models;
 
 import static com.google.common.collect.Lists.newArrayList;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -12,8 +13,10 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
+import org.joda.time.Weeks;
 
 @Entity
 public class Espetaculo {
@@ -96,8 +99,57 @@ public class Espetaculo {
       * Repare que a data da primeira sessao é sempre a data inicial.
       */
 	public List<Sessao> criaSessoes(LocalDate inicio, LocalDate fim, LocalTime horario, Periodicidade periodicidade) {
-		// ALUNO: Não apague esse metodo. Esse sim será usado no futuro! ;)
-		return null;
+		
+		if(inicio == null || fim == null || horario == null || periodicidade == null){
+			throw new IllegalArgumentException();
+		}
+		
+		List<Sessao> lista = new ArrayList<Sessao>();
+		if(fim.isBefore(inicio)){
+			return lista; 
+		}
+		Espetaculo espetaculo = new Espetaculo();
+		espetaculo.setId(8l);
+		
+		
+		
+//		if(periodicidade.equals(Periodicidade.DIARIA)){
+//			populaDiario(inicio, fim, horario, lista, espetaculo);
+//		} else {
+//			populaSemanal(inicio, fim, horario, lista, espetaculo);
+//		}
+		
+//		return lista;
+		return periodicidade.getCriadorDeSessoes().cria(inicio, fim, horario, espetaculo);
+	}
+
+	private void populaSemanal(LocalDate inicio, LocalDate fim, LocalTime horario,
+			List<Sessao> lista, Espetaculo espetaculo) {
+		int i = 0;
+		Weeks weeks = Weeks.weeksBetween(inicio, fim);
+		do{
+			Sessao sessao = new Sessao();
+			sessao.setEspetaculo(espetaculo);
+			sessao.setInicio(inicio.toDateTime(horario).plusWeeks(i));
+			
+			lista.add(sessao);
+			i++;
+		}while(i <= weeks.getWeeks());
+	}
+
+	private int populaDiario(LocalDate inicio, LocalDate fim,LocalTime horario,
+			List<Sessao> lista, Espetaculo espetaculo) {
+		 int i = 0;
+		 Days days = Days.daysBetween(inicio, fim);
+		do{
+			Sessao sessao = new Sessao();
+			sessao.setEspetaculo(espetaculo);
+			sessao.setInicio(inicio.toDateTime(horario).plusDays(i));
+			
+			lista.add(sessao);
+			i++;
+		}while(i <= days.getDays());
+		return i;
 	}
 	
 	public boolean Vagas(int qtd, int min)
