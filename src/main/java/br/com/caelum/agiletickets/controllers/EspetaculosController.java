@@ -28,7 +28,6 @@ public class EspetaculosController {
 	private final Agenda agenda;
 	private Validator validator;
 	private Result result;
-	
 
 	private final DiretorioDeEstabelecimentos estabelecimentos;
 
@@ -48,6 +47,7 @@ public class EspetaculosController {
 
 	@Post @Path("/espetaculos")
 	public void adiciona(Espetaculo espetaculo) {
+
 		// aqui eh onde fazemos as varias validacoes
 		// se nao tiver nome, avisa o usuario
 		// se nao tiver descricao, avisa o usuario
@@ -69,6 +69,13 @@ public class EspetaculosController {
 
 	private void adicionaMensagemDeValidacao(String mensagem, String categoria) {
 		validator.add(new ValidationMessage(mensagem, categoria));
+	}
+
+	private void validaCampo(String valorCampo, String descricao) {
+		if (Strings.isNullOrEmpty(valorCampo)) {
+			validator.add(new ValidationMessage(descricao + "nao pode estar em branco", ""));
+		}
+		validator.onErrorRedirectTo(this).lista();
 	}
 
 
@@ -93,14 +100,20 @@ public class EspetaculosController {
 			result.notFound();
 			return;
 		}
-
 		validaQtdeDeVagas(quantidade, sessao);
-
+		validaSessao(quantidade, sessao);
 		sessao.reserva(quantidade);
 		result.include("message", "Sessao reservada com sucesso");
-
 		result.redirectTo(IndexController.class).index();
 	}
+
+	private void validaSessao(final Integer quantidade, Sessao sessao) {
+		verificaDisponibilidadeIngresso(quantidade, sessao);
+
+		// em caso de erro, redireciona para a lista de sessao
+		validator.onErrorRedirectTo(this).sessao(sessao.getId());
+	}
+
 
 	private void validaQtdeDeVagas(final Integer quantidade, Sessao sessao) {
 		if (quantidade < 1) {
@@ -108,28 +121,32 @@ public class EspetaculosController {
 		}
 
 		if (!sessao.podeReservar(quantidade)) {
+
 			adicionaMensagemDeValidacao("Nao existem ingressos dispon√≠veis", "");
 		}
+	}
 
+	private void verificaDisponibilidadeIngresso(final Integer quantidade,
+		Sessao sessao) {
 		// em caso de erro, redireciona para a lista de sessao
 		validator.onErrorRedirectTo(this).sessao(sessao.getId());
+
+		validator.add(new ValidationMessage("Nao existem ingressos disponiveis", ""));
 	}
 
 	@Get @Path("/espetaculo/{espetaculoId}/sessoes")
 	public void sessoes(Long espetaculoId) {
 		Espetaculo espetaculo = carregaEspetaculo(espetaculoId);
-
 		result.include("espetaculo", espetaculo);
 	}
 
-
 	@Post @Path("/espetaculo/{espetaculoId}/sessoes")
-	public void cadastraSessoes(Long espetaculoId, LocalDate inicio, LocalDate fim, LocalTime horario, Periodicidade periodicidade) {
+	public void cadastraSessoes(Long espetaculoId, LocalDate inicio, LocalDate fim, LocalTime horario, Periodicidade periodo) {
 		Espetaculo espetaculo = carregaEspetaculo(espetaculoId);
 
 		// aqui faz a magica!
 		// cria sessoes baseado no periodo de inicio e fim passados pelo usuario
-		List<Sessao> sessoes = espetaculo.criaSessoes(inicio, fim, horario, periodicidade);
+		List<Sessao> sessoes = espetaculo.criaSessoes(inicio, fim, horario, periodo);
 
 		agenda.agende(sessoes);
 
@@ -146,5 +163,4 @@ public class EspetaculosController {
 		return espetaculo;
 	}
 
-	
 }

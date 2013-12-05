@@ -12,9 +12,17 @@ import br.com.caelum.vraptor.util.jpa.EntityManagerCreator;
 import br.com.caelum.vraptor.util.jpa.EntityManagerFactoryCreator;
 
 public class PreencheBanco {
+	
+	EntityManagerFactoryCreator creator;
+	EntityManagerCreator managerCreator;
+	EntityManager manager;
+	
+	public PreencheBanco(){
+		inicializa();
+	}
 
-	// ALUNO: Não apague essa classe
 	public static void main(String[] args) {
+
 		EntityManagerFactoryCreator creator = new EntityManagerFactoryCreator();
 		creator.create();
 		EntityManagerCreator managerCreator = new EntityManagerCreator(creator.getInstance());
@@ -32,10 +40,43 @@ public class PreencheBanco {
 		manager.persist(estabelecimento);
 		manager.persist(espetaculo);
 
+		new PreencheBanco();
+	}
+	
+	public void realizaInsercoes(){
+		createQueries();
+		Estabelecimento estabelecimento = criaEstabelecimento();
+		Espetaculo espetaculo = criaEspetaculo(estabelecimento);
+		persist(estabelecimento, espetaculo);
+		populaSessoes(espetaculo);
+	}
+
+
+	private void populaSessoes(Espetaculo espetaculo) {
 		for (int i = 0; i < 10; i++) {
 			criaSessao(manager, espetaculo, i);
 		}
+	}
 
+	private void persist(Estabelecimento estabelecimento, Espetaculo espetaculo) {
+		manager.persist(estabelecimento);
+		manager.persist(espetaculo);
+	}
+
+	private void createQueries() {
+		manager.createQuery("delete from Sessao").executeUpdate();
+		manager.createQuery("delete from Espetaculo").executeUpdate();
+		manager.createQuery("delete from Estabelecimento").executeUpdate();
+	}
+	
+	public void inicializa(){
+		creator = new EntityManagerFactoryCreator();
+		creator.create();
+		managerCreator = new EntityManagerCreator(creator.getInstance());
+		managerCreator.create();
+		manager = managerCreator.getInstance();
+		manager.getTransaction().begin();
+		realizaInsercoes();
 		manager.getTransaction().commit();
 		manager.close();
 	}

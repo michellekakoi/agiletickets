@@ -32,6 +32,7 @@ public class SessaoTest {
 	}
 	
 	@Test
+
 	public void reservarTodaQuantidadeDeIngressosDisponivel() throws Exception{
 		Sessao sessao = new Sessao();
 		sessao.setTotalIngressos(5);
@@ -43,7 +44,12 @@ public class SessaoTest {
 	public void naoPodeSerReservadaQuantidadeDeIngressosNula() throws Exception{
 		Sessao sessao = new Sessao();
 		sessao.setTotalIngressos(5);
-
 		Assert.assertEquals(false, sessao.podeReservar(null));
+	}
+
+	public void deveVenderSeingressoDisponiveisIgualAoSolicitado() throws Exception {
+		Sessao sessao = new Sessao();
+		sessao.setTotalIngressos(2);
+		Assert.assertTrue(sessao.podeReservar(sessao.getIngressosDisponiveis()));
 	}
 }
