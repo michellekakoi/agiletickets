@@ -1,7 +1,7 @@
 <project name="agiletickets" default="war" xmlns:ivy="antlib:org.apache.ivy.ant">
 
 	<property file="build.properties" />
-	<property name="persistence" file="build.properties" />
+	<property name="persistence" value="persistence.xml" />
 
 	<!-- paths -->
 	<path id="lib.path.id">
