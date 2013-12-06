@@ -99,7 +99,7 @@ public class EspetaculosController {
 	}
 
 	@Post @Path("/sessao/{sessaoId}/reserva")
-	public void reserva(Long sessaoId, final Integer quantidade) {
+	public void reserva(Long sessaoId, final Integer quantidade, boolean desconto) {
 		Sessao sessao = agenda.sessao(sessaoId);
 		if (isSessaoNula(sessao)) {
 			result.notFound();
@@ -108,7 +108,15 @@ public class EspetaculosController {
 		validaQtdeDeVagas(quantidade, sessao);
 		
 		sessao.reserva(quantidade);
-		result.include("message", "Sessao reservada com sucesso");
+		
+		BigDecimal precoTotal = sessao.getPreco().multiply(BigDecimal.valueOf(quantidade));
+		// desconto de 50% se estudante ou idoso
+		if(desconto){
+			precoTotal = precoTotal.divide(BigDecimal.valueOf(2));
+		}
+
+		result.include("message", "Sessao reservada com sucesso por " + CURRENCY.format(precoTotal));
+
 		result.redirectTo(IndexController.class).index();
 	}
 
@@ -121,23 +129,10 @@ public class EspetaculosController {
 		}
 
 		if (!sessao.podeReservar(quantidade)) {
-
 			adicionaMensagemDeValidacao("Nao existem ingressos dispon√≠veis", "");
 		}
 		
 		validator.onErrorRedirectTo(this).sessao(sessao.getId());
-
-
-		validator.add(new ValidationMessage("Nao existem ingressos disponiveis", ""));
-
-		sessao.reserva(quantidade);
-
-		BigDecimal precoTotal = sessao.getPreco().multiply(BigDecimal.valueOf(quantidade));
-
-		result.include("message", "Sessao reservada com sucesso por " + CURRENCY.format(precoTotal));
-
-		result.redirectTo(IndexController.class).index();
-
 	}
 
 	

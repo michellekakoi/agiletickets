@@ -28,17 +28,17 @@ public class EstabelecimentosController {
 	}
 
 	@Get @Path("/estabelecimentos")
-	public List<Estabelecimento> listaEstabelecimentos() {
+	public List<Estabelecimento> lista() {
 		return diretorio.todos();
 	}
 
 	@Post @Path("/estabelecimentos")
 	public void adiciona(final Estabelecimento estabelecimento) {
 		validacaoEstabelecimento(estabelecimento);
-		validator.onErrorRedirectTo(this).listaEstabelecimentos();
+		validator.onErrorRedirectTo(this).lista();
 
 		diretorio.adiciona(estabelecimento);
-		result.redirectTo(this).listaEstabelecimentos();
+		result.redirectTo(this).lista();
 	}
 
 

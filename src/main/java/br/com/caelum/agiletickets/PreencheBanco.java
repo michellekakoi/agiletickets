@@ -32,9 +32,9 @@ public class PreencheBanco {
 		EntityManager manager = managerCreator.getInstance();
 
 		manager.getTransaction().begin();
-		executaUpdate(manager, "delete from Sessao");
-		executaUpdate(manager, "delete from Espetaculo");
-		executaUpdate(manager, "delete from Estabelecimento");
+//		executaUpdate(manager, "delete from Sessao");
+//		executaUpdate(manager, "delete from Espetaculo");
+//		executaUpdate(manager, "delete from Estabelecimento");
 		Estabelecimento estabelecimento = criaEstabelecimento();
 
 		Espetaculo espetaculo = criaEspetaculo(estabelecimento);
@@ -57,7 +57,7 @@ public class PreencheBanco {
 	private void populaSessoes(Espetaculo espetaculo) {
 		for (int i = 0; i < 10; i++) {
 
-			criaSessao(manager, espetaculo, i);
+			//criaSessao(manager, espetaculo, i);
 
 			Sessao sessao = new Sessao();
 			sessao.setEspetaculo(espetaculo);
@@ -77,9 +77,9 @@ public class PreencheBanco {
 	}
 
 	private void createQueries() {
-		manager.createQuery("delete from Sessao").executeUpdate();
-		manager.createQuery("delete from Espetaculo").executeUpdate();
-		manager.createQuery("delete from Estabelecimento").executeUpdate();
+//		manager.createQuery("delete from Sessao").executeUpdate();
+//		manager.createQuery("delete from Espetaculo").executeUpdate();
+//		manager.createQuery("delete from Estabelecimento").executeUpdate();
 	}
 	
 	public void inicializa(){
